@@ -1,7 +1,8 @@
 import app from "./app";
 import { connectDB } from "./db";
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
+
 
 (async () => {
   await connectDB();
@@ -9,3 +10,6 @@ const PORT = process.env.PORT || 3000;
     console.log(`Listening on port ${PORT}`);
   });
 })();
+
+
+
