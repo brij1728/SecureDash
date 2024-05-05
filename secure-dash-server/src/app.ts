@@ -6,6 +6,7 @@ import createHttpError from 'http-errors';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import router from './routes';
 
 dotenv.config();
 
@@ -17,11 +18,13 @@ App.use(cors());
 App.use(express.json());
 
 // Define a route for the root URL
-App.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+// App.get('/', (req, res) => {
+//   res.send('Hello World!');
+// });
 
 // Other routes here
+// Mount the router on the app
+App.use('/', router);
 
 // This middleware should be after all route declarations
 App.use((req: Request, res: Response, next: NextFunction) => {
