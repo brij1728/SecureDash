@@ -34,6 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 // Other routes here
 // Mount the router on the app
 app.use('/', router);
+app.use('/api', router);
 
 // This middleware should be after all route declarations
 app.use((req: Request, res: Response, next: NextFunction) => {
