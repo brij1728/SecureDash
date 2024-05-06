@@ -24,7 +24,7 @@ app.use(cors({
 app.use(compression());
 app.use(cookieParser());
 app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 
 
 // Define a route for the root URL
