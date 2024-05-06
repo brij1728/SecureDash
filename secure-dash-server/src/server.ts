@@ -1,6 +1,5 @@
 import app from "./app";
 import { connectDB } from "./db";
-
 const PORT = process.env.PORT || 3001;
 
 console.log("Starting server...");

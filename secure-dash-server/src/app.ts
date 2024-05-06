@@ -5,7 +5,6 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import createHttpError from 'http-errors';
 import dotenv from 'dotenv';
-import e from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import router from './routes';

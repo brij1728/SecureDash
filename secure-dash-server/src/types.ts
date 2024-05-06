@@ -1,6 +1,9 @@
-export interface SecureDash {
-  name: string;
+export interface User {
+  username: string;
   email: string;
-  password: string;
-  role: string;
+  authentication: {
+    password: string;
+    salt: string;
+    sessionToken: string;
+  };
 }
