@@ -1,38 +1,48 @@
-// app.ts
 import express, { NextFunction, Request, Response } from 'express';
 
+import compression from 'compression';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import createHttpError from 'http-errors';
 import dotenv from 'dotenv';
+import e from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import router from './routes';
 
 dotenv.config();
 
-const App = express();
+const app = express();
 
-App.use(morgan('dev'));
-App.use(helmet());
-App.use(cors());
-App.use(express.json());
+// Middleware
+app.use(morgan('dev'));
+app.use(helmet());
+app.use(cors({
+  origin: process.env.CLIENT_URL,
+  credentials: true,
+}));
+app.use(compression());
+app.use(cookieParser());
+app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+
 
 // Define a route for the root URL
-// App.get('/', (req, res) => {
+// app.get('/', (req, res) => {
 //   res.send('Hello World!');
 // });
 
 // Other routes here
 // Mount the router on the app
-App.use('/', router);
+app.use('/', router);
 
 // This middleware should be after all route declarations
-App.use((req: Request, res: Response, next: NextFunction) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   next(createHttpError(404, 'Endpoint not found'));
 });
 
 // Error handling middleware
-App.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
   console.error('Error fetching user:', error);
   let errorMessage = 'An unknown Error occurred';
   let statusCode = 500;
@@ -43,4 +53,5 @@ App.use((error: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(statusCode).json({ error: errorMessage });
 });
 
-export default App;
+
+export default app;
