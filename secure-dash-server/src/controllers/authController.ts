@@ -43,18 +43,25 @@ export const login = async (req: Request, res: Response) => {
 export const register = async (req: Request, res: Response) => {
   try {
     const { username, email, password, authType } = req.body;
+    console.log("Registering user:", username, email, authType); 
+
     if (!username || !email || !password || !authType) {
+      console.log("Missing required fields"); 
       return res.status(400).json({ message: "Missing required fields" });
     }
+    
     const existingUser = await prisma.user.findUnique({
       where: { email }
     });
     if (existingUser) {
+      console.log("User already exists"); 
       return res.status(400).json({ message: "User already exists" });
     }
+
     const salt = generateSalt();
     const hashedPassword = hashPassword(password, salt);
     const sessionToken = generateSessionToken();
+    
     const user = await prisma.user.create({
       data: {
         username,
@@ -69,9 +76,13 @@ export const register = async (req: Request, res: Response) => {
         }
       }
     });
-    return res.status(201).json({ user }).end();
+
+    console.log("User created successfully", user.id); // Log success
+    return res.status(201).json({ user });
+
   } catch (error) {
-    console.error("Registration error:", error);
+    console.error("Registration error:", error); // Log full error
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
