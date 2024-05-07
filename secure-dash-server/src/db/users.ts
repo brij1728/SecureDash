@@ -1,25 +1,72 @@
-import { User } from "../types";
-import mongoose from "mongoose";
+import { User } from 'types';
+import { prisma } from './db';
 
-const UserSchema = new mongoose.Schema({
-  username: {type: String, required: true},
-  email: {type: String, required: true},
-  authentication: {
-    password: {type: String, required: true, select: false},
-    salt: {type: String, select: false},
-    sessionToken: {type: String, select: false},
-  },
-  
-});
+export const createUser = async (userData: User) => {
+  const createUserPromises = userData.authentication.map(auth => {
+    return prisma.user.create({
+      data: {
+        username: userData.username,
+        email: userData.email,
+        authentication: {
+          create: {
+            password: auth.password,
+            salt: auth.salt,
+            sessionToken: auth.sessionToken,
+            authType: auth.authType,
+          },
+        },
+      },
+    });
+  });
+  return Promise.all(createUserPromises);
+};
 
-const UserModel = mongoose.model<User>("User", UserSchema);
+export const getUserByEmail = async (email: string) => {
+  return await prisma.user.findUnique({
+    where: { email },
+    include: { authentication: true },
+  });
+};
 
-export const getUsers = () => UserModel.find();
-export const getUserByEmail = (email: string) => UserModel.findOne({email});
-export const getUserBySessionToken = (sessionToken: string) => UserModel.findOne({
-	"authentication.sessionToken": sessionToken,
-});
-export const getUserById = (id: string) => UserModel.findById(id);
-export const createUser = (user: User) => new UserModel(user).save();
-export const updateUserById = (id: string, user: User) => UserModel.findByIdAndUpdate(id, user);
-export const deleteUserById = (id: string) => UserModel.findByIdAndDelete({_id: id});
+export const getUserBySessionToken = async (sessionToken: string) => {
+  return await prisma.authRecord.findUnique({
+    where: { sessionToken },
+    include: { user: true },
+  });
+};
+
+export const getUserById = async (id: string) => {
+  return await prisma.user.findUnique({
+    where: { id },
+  });
+};
+
+export const deleteUserById = async (id: string) => {
+  return await prisma.user.delete({
+    where: { id },
+  });
+};
+
+export const updateUserById = async (id: string, updateData: User) => {
+  const updateUserPromises = updateData.authentication.map(auth => {
+    return prisma.user.update({
+      where: { id },
+      data: {
+        username: updateData.username,
+        email: updateData.email,
+        authentication: {
+          update: {
+            where: { id: auth.id },
+            data: {
+              password: auth.password,
+              salt: auth.salt,
+              sessionToken: auth.sessionToken,
+              authType: auth.authType,
+            },
+          },
+        },
+      },
+    });
+  });
+  return Promise.all(updateUserPromises);
+};

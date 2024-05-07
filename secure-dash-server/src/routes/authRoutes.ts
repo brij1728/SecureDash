@@ -1,5 +1,6 @@
+import { login, register } from '../controllers';
+
 import  { Router } from 'express';
-import { register } from '../controllers';
 
 const router = Router();
 
@@ -7,9 +8,7 @@ const router = Router();
 router.post('/register', register);
 
 // User login
-router.post('/login', (req, res) => {
-  res.send('User login');
-});
+router.post('/login', login);
 
 // User logout
 router.post('/logout', (req, res) => {

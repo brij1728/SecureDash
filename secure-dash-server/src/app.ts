@@ -26,10 +26,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-// Define a route for the root URL
-// app.get('/', (req, res) => {
-//   res.send('Hello World!');
-// });
+// Test route here
+app.get('/test', (req, res) => {
+  res.status(200).send('Test endpoint is working!');
+});
 
 // Other routes here
 // Mount the router on the app

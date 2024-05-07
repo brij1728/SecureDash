@@ -1,9 +1,13 @@
 export interface User {
   username: string;
   email: string;
-  authentication: {
-    password: string;
-    salt: string;
-    sessionToken: string;
-  };
+  authentication: AuthRecord[];
+}
+
+export interface AuthRecord {
+  id: string;
+  authType: string; 
+  salt: string;
+  password: string;
+  sessionToken: string;
 }
