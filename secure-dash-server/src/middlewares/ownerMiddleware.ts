@@ -18,7 +18,7 @@ export const isOwner = async (req: Request, res: Response, next: NextFunction) =
       return res.status(401).json({ message: "Unauthorized - Session token is invalid or user does not exist" });
     }
 
-    req.user = authRecord.user; 
+    // req.user = authRecord.user; 
     next();
   } catch (error) {
     console.error("Owner error:", error);
