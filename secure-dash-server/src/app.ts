@@ -13,11 +13,11 @@ dotenv.config();
 
 const app = express();
 
-// Middleware
+// Middleware for security and performance
 app.use(morgan('dev'));
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+  origin: process.env.CLIENT_URL, // Ensure CORS settings are correct
   credentials: true,
 }));
 app.use(compression());
@@ -25,33 +25,25 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
-// Test route here
+// Test route for simple checks
 app.get('/test', (req, res) => {
   res.status(200).send('Test endpoint is working!');
 });
 
-// Other routes here
-// Mount the router on the app
+// Routes
 app.use('/', router);
-// app.use('/api', router);
 
-// This middleware should be after all route declarations
+// Not found middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
   next(createHttpError(404, 'Endpoint not found'));
 });
 
-// Error handling middleware
-app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error('Error fetching user:', error);
-  let errorMessage = 'An unknown Error occurred';
-  let statusCode = 500;
-  if (error instanceof createHttpError.HttpError) {
-    errorMessage = error.message;
-    statusCode = error.statusCode;
-  }
-  res.status(statusCode).json({ error: errorMessage });
+// Centralized error handling
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+  console.error('Error handling request:', error);
+  const statusCode = error.status || 500;
+  const message = error.message || 'Internal server error';
+  res.status(statusCode).json({ error: message });
 });
-
 
 export default app;
