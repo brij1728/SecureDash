@@ -1,15 +1,17 @@
+import { deleteUser, getAllUsers, updateUser } from '../controllers';
+import { isAuthenticated, isOwner } from '../middlewares';
+
 import { Router } from 'express';
-import { getAllUsers } from '../controllers';
 
 const router = Router();
 
 // Route to get all users
-router.get('/users', getAllUsers);
+router.get('/users',isAuthenticated, getAllUsers);
+router.delete('/users/:id',isAuthenticated, isOwner, deleteUser); 
+router.put('/users/:id',isAuthenticated, isOwner, updateUser);
+
 
 
 // router.post('/users', createUser);    // To create a new user
-// router.get('/users/:id', getUserById); // To get a specific user by ID
-// router.put('/users/:id', updateUser); // To update a specific user
-// router.delete('/users/:id', deleteUser); // To delete a specific user
-
+// router.get('/users/:id', getUserById); // To get a user by ID
 export default router;

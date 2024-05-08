@@ -1,24 +1,22 @@
+import { ObjectId } from 'bson';
 import { User } from 'types';
 import { prisma } from './db';
 
 export const createUser = async (userData: User) => {
-  const createUserPromises = userData.authentication.map(auth => {
-    return prisma.user.create({
-      data: {
-        username: userData.username,
-        email: userData.email,
-        authentication: {
-          create: {
-            password: auth.password,
-            salt: auth.salt,
-            sessionToken: auth.sessionToken,
-            authType: auth.authType,
-          },
-        },
+  return await prisma.user.create({
+    data: {
+      username: userData.username,
+      email: userData.email,
+      authentication: {
+        create: userData.authentication.map(auth => ({
+          password: auth.password,
+          salt: auth.salt,
+          sessionToken: auth.sessionToken,
+          authType: auth.authType,
+        })),
       },
-    });
+    },
   });
-  return Promise.all(createUserPromises);
 };
 
 export const getUserByEmail = async (email: string) => {
@@ -36,37 +34,51 @@ export const getUserBySessionToken = async (sessionToken: string) => {
 };
 
 export const getUserById = async (id: string) => {
+  if (!ObjectId.isValid(id)) {
+    console.log("Invalid ID format", id);
+    return null;
+  }
   return await prisma.user.findUnique({
     where: { id },
   });
 };
 
 export const deleteUserById = async (id: string) => {
-  return await prisma.user.delete({
-    where: { id },
-  });
+  if (!ObjectId.isValid(id)) {
+    console.log("Invalid ID format", id);
+    return null;
+  }
+  try {
+    return await prisma.user.delete({
+      where: { id }
+    });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    throw error; 
+  }
 };
 
 export const updateUserById = async (id: string, updateData: User) => {
-  const updateUserPromises = updateData.authentication.map(auth => {
-    return prisma.user.update({
-      where: { id },
-      data: {
-        username: updateData.username,
-        email: updateData.email,
-        authentication: {
-          update: {
-            where: { id: auth.id },
-            data: {
-              password: auth.password,
-              salt: auth.salt,
-              sessionToken: auth.sessionToken,
-              authType: auth.authType,
-            },
+  if (!ObjectId.isValid(id)) {
+    console.log("Invalid ID format", id);
+    return null;
+  }
+  return await prisma.user.update({
+    where: { id },
+    data: {
+      username: updateData.username,
+      email: updateData.email,
+      authentication: {
+        updateMany: updateData.authentication.map(auth => ({
+          where: { id: auth.id }, 
+          data: {
+            password: auth.password,
+            salt: auth.salt,
+            sessionToken: auth.sessionToken,
+            authType: auth.authType, 
           },
-        },
+        })),
       },
-    });
+    },
   });
-  return Promise.all(updateUserPromises);
 };
