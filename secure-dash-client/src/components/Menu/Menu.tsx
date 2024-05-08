@@ -22,8 +22,8 @@ export const Menu: React.FC<MenuProps> = ({ onLinkClick }) => {
       href: '/login',
     },
     {
-      name: 'Register',
-      href: '/register',
+      name: 'Signup',
+      href: '/signup',
     },
   ];
 
