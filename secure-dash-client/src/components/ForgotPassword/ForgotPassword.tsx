@@ -9,7 +9,7 @@ export const ForgotPassword = () => {
         Forgot Password
       </h1>
       <p className="text-center text-sm text-secondary">
-        Enter your email address below and we&apos;`ll send you a link to reset
+        Enter your email address below and we&apos;ll send you a link to reset
         your password.
       </p>
       <form className="mt-6 space-y-4">
